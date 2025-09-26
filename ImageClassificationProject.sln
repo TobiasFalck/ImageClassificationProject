@@ -4441,6 +4441,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{036B0185-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUnitTesting", "ConsoleUnitTesting\ConsoleUnitTesting.csproj", "{307456B9-D458-49A5-8C96-C9133E694867}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TensorFlowModel", "TensorFlowModel", "{0041C236-7B74-42CA-8F69-6447FB34E581}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\EASV - Data\labels.txt = ..\..\..\Desktop\EASV - Data\labels.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "model.savedmodel", "model.savedmodel", "{4E9581E3-0040-4361-920B-9A201C2D9CD2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\EASV - Data\model.savedmodel\saved_model.pb = ..\..\..\Desktop\EASV - Data\model.savedmodel\saved_model.pb
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{D4381E32-34EB-42FC-8C3B-51EB1572F480}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "variables", "variables", "{7B5A6A74-03B1-467B-BDC0-43AD93FCFB84}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\EASV - Data\model.savedmodel\variables\variables.data-00000-of-00001 = ..\..\..\Desktop\EASV - Data\model.savedmodel\variables\variables.data-00000-of-00001
+		..\..\..\Desktop\EASV - Data\model.savedmodel\variables\variables.index = ..\..\..\Desktop\EASV - Data\model.savedmodel\variables\variables.index
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -4477,6 +4495,9 @@ Global
 		{ADD53991-F481-4F52-A531-7BB40937C3AF} = {8A8682F9-4F43-42FF-92ED-CAA2B0D8B05C}
 		{0EEFEC49-F3ED-465C-B0F2-61A2A7256837} = {8A8682F9-4F43-42FF-92ED-CAA2B0D8B05C}
 		{307456B9-D458-49A5-8C96-C9133E694867} = {036B0185-CF32-41DB-B769-6202DB39290C}
+		{4E9581E3-0040-4361-920B-9A201C2D9CD2} = {0041C236-7B74-42CA-8F69-6447FB34E581}
+		{D4381E32-34EB-42FC-8C3B-51EB1572F480} = {4E9581E3-0040-4361-920B-9A201C2D9CD2}
+		{7B5A6A74-03B1-467B-BDC0-43AD93FCFB84} = {4E9581E3-0040-4361-920B-9A201C2D9CD2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7AD4BB1F-10B6-4467-B979-D3A3EF94023E}
