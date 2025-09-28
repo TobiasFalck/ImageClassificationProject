@@ -6,7 +6,7 @@
              xmlns:viewmodel ="clr-namespace:WpfImageClassification.ViewModel">
     <Application.Resources>
         <DataTemplate DataType="{x:Type viewmodel:MainWindowViewModel}">
-            <local:MainWindow/>
+            <view:MainWindow/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodel:MenuViewModel}">
             <view:MenuView/>

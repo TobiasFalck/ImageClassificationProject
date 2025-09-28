@@ -11,15 +11,15 @@ namespace WpfImageClassification.ViewModel
     {
         private ICommand _goToStatisticsViewCommand;
         private readonly Action _goToStatisticsViewAction;
+        public ICommand GoToStatisticsViewCommand
+        {
+            get => _goToStatisticsViewCommand ??= new BaseCommand(GoToStatisticsView);
+        }
+
 
         public MenuViewModel(Action action) 
         {
             _goToStatisticsViewAction = action;  
-        }
-
-        public ICommand GoToStatisticsViewCommand
-        {
-            get => _goToStatisticsViewCommand ??= new BaseCommand(GoToStatisticsView);
         }
 
         public void GoToStatisticsView(object obj)
