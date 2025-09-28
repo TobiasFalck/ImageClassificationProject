@@ -8,31 +8,31 @@ namespace WpfImageClassification.ViewModel
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        private BaseViewModel _curentViewModel;
+        private BaseViewModel _currentViewModel;
 
-        public BaseViewModel CurentViewModel 
+        public BaseViewModel CurrentViewModel 
         { 
-            get => _curentViewModel;
+            get => _currentViewModel;
             set
             { 
-                _curentViewModel = value; 
+                _currentViewModel = value; 
                 OnPropertyChanged();
             }
         }
 
         public MainWindowViewModel() 
         {
-            CurentViewModel = new MenuViewModel(GoToStatisticsView);
+            CurrentViewModel = new MenuViewModel(GoToStatisticsView);
         }
 
         public void GoToStatisticsView()
         {
-            CurentViewModel = new StatisticsViewModel(GoToMenuView);
+            CurrentViewModel = new StatisticsViewModel(GoToMenuView);
         }
 
         public void GoToMenuView()
         {
-            CurentViewModel = new MenuViewModel(GoToStatisticsView);
+            CurrentViewModel = new MenuViewModel(GoToStatisticsView);
         }
     }
 }

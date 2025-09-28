@@ -2,6 +2,7 @@
 using System.Data;
 using System.Windows;
 using WpfImageClassification.ViewModel;
+using WpfImageClassification.View;
 
 namespace WpfImageClassification
 {
