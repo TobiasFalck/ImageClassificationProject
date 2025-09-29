@@ -1,132 +1,83 @@
-﻿using Infrastructure.Models;
-using Microsoft.ML;
+﻿using Microsoft.ML;
 using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
+using System.Diagnostics.Contracts;
+using Tensorflow.Operations.Initializers;
 
-namespace ImageClassificationProject
+namespace UsingTensorFlowModel
 {
-
-    public class TensorFlowImageClassifier
+    //alle filer, altsaa test billedet, labels.txt, saved_model.pb, variables.index og variables.data:
+    //Tjek deres properties og vaer sikker paa der staar "Copy to Output Directory: Copy if newer"
+    internal class Program
     {
-        public enum ImageLabels
-        {
-            cardboard = 0,
-            glass = 1,
-            metal = 2,
-            plastic = 3,
-        }
+        //stien til modellens MAPPE, sammenhold det med solution explorer saa skal det nok give mening.
+        private static readonly string ModelPath =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"TensorFlowModel","model.savedmodel");
+        //stien til labels
+        private static readonly string LabelsPath =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"TensorFlowModel", "labels.txt");
+        //input noden paa jeres savedmodel, find den vha. netron.app (hjemmeside)
+        private const string ModelInputName = "serving_default_sequential_3_input";
+        //outputnoden p[ jeres savedmodel, find paa samme maade
+        private const string ModelOutputName = "StatefulPartitionedCall";
 
-        private static string _localPath = "C:\\Users\\Niklas\\source\\repos\\ImageClassificationProject\\ImageClassificationProject";
-        private static string _baseDir = string.Empty;
+
 
         static void Main(string[] args)
         {
-            var trainList = new List<ImageData>();
-            var validateList = new List<ImageData>();
+            //bruge noget som hedder MLContext - hvad er det? Who knows!
+            var mlContext = new MLContext();
 
-            _baseDir = Path.Combine(_localPath, "data");
+            //definer image processing pipeline - hvad er det? Who the fuck knows, jeg
+            //faar hjaelp af AI!
+            var pipeline = mlContext.Transforms.LoadImages(outputColumnName: ModelInputName, imageFolder: "", inputColumnName: nameof(ModelInput.ImagePath))
+            .Append(mlContext.Transforms.ResizeImages(outputColumnName: ModelInputName, imageWidth: 224, imageHeight: 224, inputColumnName: ModelInputName))
+            .Append(mlContext.Transforms.ExtractPixels(outputColumnName: ModelInputName, interleavePixelColors: true, offsetImage: 127.5f, scaleImage: 1 / 127.5f))
+            .Append(mlContext.Model.LoadTensorFlowModel(ModelPath)
+            .ScoreTensorFlowModel(
+                outputColumnNames: new[] { ModelOutputName },
+                inputColumnNames: new[] { ModelInputName },
+                addBatchDimensionInput: true));
 
-            var testImage = Path.Combine(_baseDir, "unknown", "test_002.jpg");
+            //lav en prediction engine - do i have to repeat myself???
+            var emptyData = mlContext.Data.LoadFromEnumerable(new List<ModelInput>());
+            var model = pipeline.Fit(emptyData);
 
+            var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(model);
 
-            foreach (var materialTypeName in Enum.GetValues(typeof(ImageLabels)))
-            {
-                foreach (var trainFilePath in Directory.GetFiles(Path.Combine(_baseDir, materialTypeName.ToString(), "train")))
-                {
-                    trainList.Add(new ImageData() { ImagePath = trainFilePath, Label = ((int)materialTypeName).ToString() });
-                }
-            }
+            //load labels og lav forudsigelsen!
+            var labels = File.ReadAllLines(LabelsPath);
+            //flg. skal vaere dit eget testbillede og det skal vaere tilfoejet til projektet
+            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ImageClassificationProject","TensorFlowModel","test.jpg");
+        //C: \\Users\\Niklas\\Source\\Repos\\ImageClassificationProject\\ImageClassificationProject\\TensorFlowModel\\test.jpg
 
-            foreach (var materialTypeName in Enum.GetValues(typeof(ImageLabels)))
-            {
-                foreach (var validateFilePath in Directory.GetFiles(Path.Combine(_baseDir, materialTypeName.ToString(), "model_test")))
-                {
-                    validateList.Add(new ImageData() { ImagePath = validateFilePath, Label = ((int)materialTypeName).ToString() });
-                }
-            }
+        var input = new ModelInput { ImagePath = imagePath };
+            var prediction = predictionEngine.Predict(input);
 
+            //fortolker resultatet
+            var maxProbability = prediction.Prediction.Max();
+            var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
+            var predictedLabel = labels[maxIndex];
 
-            var ml = new MLContext(seed: 1);
+            Console.WriteLine($"Image: {Path.GetFileName(imagePath)}");
+            Console.WriteLine($"Predicted Label: {predictedLabel}");
+            Console.WriteLine($"Probability: {maxProbability:P2}");
 
-            var trainData = ml.Data.LoadFromEnumerable(trainList);
-            var validData = ml.Data.LoadFromEnumerable(validateList);
-
-
-            Action<InputData, OutputData> convertVecType = (input, output) => output.Image = ConvertToVarVectorByte(input.Image);
-
-            var pipeline = ml.Transforms.Conversion.MapValueToKey("LabelAsKey", nameof(ImageData.Label))
-                  .Append(ml.Transforms.LoadImages(
-                            outputColumnName: "Image",
-                            imageFolder: "",
-                            inputColumnName: nameof(ImageData.ImagePath)))
-                  .Append(ml.Transforms.ResizeImages(
-                            outputColumnName: "Image",
-                            imageWidth: 224,
-                            imageHeight: 224,
-                            inputColumnName: "Image"))
-                  .Append(ml.Transforms.ExtractPixels(
-                      outputColumnName: "Image"))
-                  .Append(ml.Transforms.CustomMapping<InputData, OutputData>(convertVecType, "convertVecType")
-                  .Append(ml.MulticlassClassification.Trainers.ImageClassification(
-                            featureColumnName: "Image",
-                            labelColumnName: "LabelAsKey", //System.ArgumentOutOfRangeException: 'Column 'LabelAsKey' not found (Parameter 'name')' ?!
-                            validationSet: validData))
-                  .Append(ml.Transforms.Conversion.MapKeyToValue("PredictedLabel", "PredictedLabel"))
-                  );
-
-            var model = pipeline.Fit(trainData);
-
-
-            var engine = ml.Model.CreatePredictionEngine<ImageData, ImagePrediction>(model);
-
-
-            var pred = engine.Predict(new ImageData { ImagePath = testImage });
-
-
-            int bestIdx = -1;
-            float bestScore = float.NegativeInfinity;
-
-            if (pred.Score != null && pred.Score.Length > 0)
-            {
-                bestIdx = 0; bestScore = pred.Score[0];
-
-                for (int i = 1; i < pred.Score.Length; i++)
-                {
-                    if (pred.Score[i] > bestScore)
-                    {
-                        bestIdx = i; bestScore = pred.Score[i];
-                    }
-                }
-            }
-
-            Console.WriteLine("\n=== Klassifikation (ren ML.NET) ===");
-            Console.WriteLine($"Billede: {testImage}");
-            Console.WriteLine($"Label:   {pred.PredictedLabel}");
-            Console.WriteLine($"Score:   {bestScore:P2}");
+            Console.ReadLine();
         }
+    }
 
+    //stien til billedfilen paa computeren
+    public class ModelInput
+    {
+        public string ImagePath { get; set; }
+    }
 
-        static VBuffer<byte> ConvertToVarVectorByte(VBuffer<float> input)
-        {
-            VBuffer<byte> result = default;
-            var editor = VBufferEditor.Create(ref result, input.Length, input.GetValues().Length);
-
-            var values = input.GetValues();
-            if (input.IsDense)
-            {
-                for (int i = 0; i < values.Length; i++)
-                    editor.Values[i] = (byte)values[i];
-            }
-            else
-            {
-                var indices = input.GetIndices();
-                for (int i = 0; i < values.Length; i++)
-                {
-                    editor.Values[i] = (byte)values[i];
-                    editor.Indices[i] = indices[i];
-                }
-            }
-
-            return editor.Commit();
-        }
+    public class ModelOutput
+    {
+        //StatefulPartitionedCall var navnet i min tensorflowmodel,
+        //gaar ud fra det er det samme for alle savedmodel fra teachablemachine
+        [ColumnName("StatefulPartitionedCall")]
+        public float[] Prediction { get; set; }
     }
 }

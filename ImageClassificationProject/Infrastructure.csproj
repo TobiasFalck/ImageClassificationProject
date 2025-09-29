@@ -20,4 +20,13 @@
 		<Folder Include="TensorFlowModel\model.savedmodel\assets\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="TensorFlowModel\labels.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TensorFlowModel\model.savedmodel\saved_model.pb">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
