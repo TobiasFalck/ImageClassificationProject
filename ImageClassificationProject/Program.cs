@@ -28,6 +28,17 @@ namespace UsingTensorFlowModel
             //bruge noget som hedder MLContext - hvad er det? Who knows!
             var mlContext = new MLContext();
 
+            // Find all image files in the folder (adjust the extensions as needed)
+            var imageDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "cardboard", "model_test");
+            var imageFiles = Directory.GetFiles(imageDirectory, "*.*")
+                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                            f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                            f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            // Fill the ImageList with ModelInput objects
+            var ImageList = imageFiles.Select(f => new ModelInput { ImagePath = f }).ToList();
+
             //definer image processing pipeline - hvad er det? Who the fuck knows, jeg
             //faar hjaelp af AI!
             var pipeline = mlContext.Transforms.LoadImages(outputColumnName: ModelInputName, imageFolder: "", inputColumnName: nameof(ModelInput.ImagePath))
@@ -48,20 +59,23 @@ namespace UsingTensorFlowModel
             //load labels og lav forudsigelsen!
             var labels = File.ReadAllLines(LabelsPath);
             //flg. skal vaere dit eget testbillede og det skal vaere tilfoejet til projektet
-            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"TensorFlowModel","test.jpg");
-      
+            //var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"data", "cardboard", "model_test");
 
-            var input = new ModelInput { ImagePath = imagePath };
-            var prediction = predictionEngine.Predict(input);
 
-            //fortolker resultatet
-            var maxProbability = prediction.Prediction.Max();
-            var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
-            var predictedLabel = labels[maxIndex];
+            //var input = new ModelInput { ImagePath = imagePath };
+            foreach (var input in ImageList)
+            {
+                var prediction = predictionEngine.Predict(input);
 
-            Console.WriteLine($"Image: {Path.GetFileName(imagePath)}");
-            Console.WriteLine($"Predicted Label: {predictedLabel}");
-            Console.WriteLine($"Probability: {maxProbability:P2}");
+                var maxProbability = prediction.Prediction.Max();
+                var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
+                var predictedLabel = labels[maxIndex];
+
+                Console.WriteLine($"Image: {Path.GetFileName(input.ImagePath)}");
+                Console.WriteLine($"Predicted Label: {predictedLabel}");
+                Console.WriteLine($"Accuracy: {maxProbability:P2}");
+                Console.WriteLine(); // Blank line for readability
+            }
 
             Console.ReadLine();
         }
