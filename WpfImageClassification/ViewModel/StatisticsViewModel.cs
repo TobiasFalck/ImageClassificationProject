@@ -12,9 +12,19 @@ namespace WpfImageClassification.ViewModel
         private ICommand _goToMenuViewCommand;
         private readonly Action _goToMenuViewAction;
 
+        public ICommand GoToMenuViewCommand
+        {
+            get => _goToMenuViewCommand ??= new BaseCommand(GoToMenuView);
+        }
+
         public StatisticsViewModel(Action action) 
         {
             _goToMenuViewAction = action;
+        }
+
+        public void GoToMenuView(object obj)
+        {
+            _goToMenuViewAction?.Invoke();
         }
     }
 }

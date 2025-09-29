@@ -15,7 +15,15 @@ namespace WpfImageClassification.ViewModel
         {
             get => _goToStatisticsViewCommand ??= new BaseCommand(GoToStatisticsView);
         }
-
+        public string ClassificationResult
+        {
+            get => _classificationResult;
+            set
+            {
+                _classificationResult = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MenuViewModel(Action action) 
         {
@@ -27,7 +35,18 @@ namespace WpfImageClassification.ViewModel
             _goToStatisticsViewAction?.Invoke();
         }
 
+        private string _classificationResult = "picture is : ";
 
+        public ICommand ClassifyImageCommand 
+        {
+            get => new BaseCommand(ClassifyImage);
+        }
+
+        public void ClassifyImage(object obj)
+        {
+            ClassificationResult = "picture is : Cat"; // Dummy result
+        }
     }
+
 
 }

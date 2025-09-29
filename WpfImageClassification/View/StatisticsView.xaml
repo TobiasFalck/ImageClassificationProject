@@ -7,6 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Button Content="Menu View"
+            Height="100" Width="200" Command="{Binding GoToMenuViewCommand}" Margin="600,350,0,0">
+        </Button>
+
     </Grid>
 </UserControl>
