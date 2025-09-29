@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using Infrastructure.Models;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System.Diagnostics.Contracts;
@@ -28,16 +29,23 @@ namespace UsingTensorFlowModel
             //bruge noget som hedder MLContext - hvad er det? Who knows!
             var mlContext = new MLContext();
 
-            // Find all image files in the folder (adjust the extensions as needed)
-            var imageDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "cardboard", "model_test");
-            var imageFiles = Directory.GetFiles(imageDirectory, "*.*")
-                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                            f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                            f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var testFolders = new[]
+                {
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","cardboard", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","glass", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","metal", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","plastic", "model_test")
+                };
 
-            // Fill the ImageList with ModelInput objects
-            var ImageList = imageFiles.Select(f => new ModelInput { ImagePath = f }).ToList();
+            // Collect all image files (e.g., jpg, png) from all test folders
+            var allImagePaths = testFolders
+                .SelectMany(folder => Directory.EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
+                    .Where(file => file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            // Create ModelInput objects for each image
+            var allInputs = allImagePaths.Select(path => new ModelInput { ImagePath = path }).ToList();
 
             //definer image processing pipeline - hvad er det? Who the fuck knows, jeg
             //faar hjaelp af AI!
@@ -56,25 +64,33 @@ namespace UsingTensorFlowModel
 
             var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(model);
 
-            //load labels og lav forudsigelsen!
+            // Load all ModelInput objects into IDataView
+            var inputData = mlContext.Data.LoadFromEnumerable(allInputs);
+
+            // Fit the pipeline (if needed, usually for transformers, not for TensorFlow models)
+            model = pipeline.Fit(inputData);
+
+            // Transform the data (run all images through the pipeline)
+            var predictions = model.Transform(inputData);
+
+            // Extract predictions
+            var predictionResults = mlContext.Data.CreateEnumerable<ModelOutput>(predictions, reuseRowObject: false).ToList();
+
+            // Load labels
             var labels = File.ReadAllLines(LabelsPath);
-            //flg. skal vaere dit eget testbillede og det skal vaere tilfoejet til projektet
-            //var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"data", "cardboard", "model_test");
 
-
-            //var input = new ModelInput { ImagePath = imagePath };
-            foreach (var input in ImageList)
+            // Print results for each image
+            for (int i = 0; i < allInputs.Count; i++)
             {
-                var prediction = predictionEngine.Predict(input);
-
+                var prediction = predictionResults[i];
                 var maxProbability = prediction.Prediction.Max();
                 var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
                 var predictedLabel = labels[maxIndex];
 
-                Console.WriteLine($"Image: {Path.GetFileName(input.ImagePath)}");
+                Console.WriteLine($"Image: {Path.GetFileName(allInputs[i].ImagePath)}");
                 Console.WriteLine($"Predicted Label: {predictedLabel}");
-                Console.WriteLine($"Accuracy: {maxProbability:P2}");
-                Console.WriteLine(); // Blank line for readability
+                Console.WriteLine($"Probability: {maxProbability:P2}");
+                Console.WriteLine();
             }
 
             Console.ReadLine();
@@ -82,9 +98,9 @@ namespace UsingTensorFlowModel
     }
 
     //stien til billedfilen paa computeren
-    public class ModelInput
-    {
-        public string ImagePath { get; set; }
+  public class ModelInput
+   {
+       public string ImagePath { get; set; }
     }
 
     public class ModelOutput
