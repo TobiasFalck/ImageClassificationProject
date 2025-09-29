@@ -20,4 +20,10 @@
     <Folder Include="TensorFlowModel\model.savedmodel\assets\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="data\modelstatistics.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
