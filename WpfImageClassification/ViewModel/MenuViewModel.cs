@@ -11,6 +11,9 @@ namespace WpfImageClassification.ViewModel
     {
         private ICommand _goToStatisticsViewCommand;
         private readonly Action _goToStatisticsViewAction;
+        private string _imageSourcePath;
+        private string _classificationResult = "Picture is : ";
+
         public ICommand GoToStatisticsViewCommand
         {
             get => _goToStatisticsViewCommand ??= new BaseCommand(GoToStatisticsView);
@@ -21,6 +24,19 @@ namespace WpfImageClassification.ViewModel
             set
             {
                 _classificationResult = value;
+                OnPropertyChanged();
+            }
+        }
+        public ICommand ClassifyImageCommand 
+        {
+            get => new BaseCommand(ClassifyImage);
+        }
+        public string ImageSourcePath
+        {
+            get => _imageSourcePath;
+            set
+            {
+                _imageSourcePath = value;
                 OnPropertyChanged();
             }
         }
@@ -35,16 +51,9 @@ namespace WpfImageClassification.ViewModel
             _goToStatisticsViewAction?.Invoke();
         }
 
-        private string _classificationResult = "picture is : ";
-
-        public ICommand ClassifyImageCommand 
-        {
-            get => new BaseCommand(ClassifyImage);
-        }
-
         public void ClassifyImage(object obj)
         {
-            ClassificationResult = "picture is : Cat"; // Dummy result
+            ClassificationResult = "Picture is : Cat"; 
         }
     }
 

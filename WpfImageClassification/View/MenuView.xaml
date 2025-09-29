@@ -7,7 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBox Height="60" Width="400" Text="Insert link to picture" FontSize="36" HorizontalAlignment="Left" Margin="50,50,0,0" VerticalAlignment="Top" TextAlignment="Left"/>
+        <Label Content="Insert link to picture" Margin="50,10,474,405"/>
+        <TextBox Height="60" Width="400" Text="{Binding ImageSourcePath}" FontSize="36" HorizontalAlignment="Left" Margin="50,50,0,0" VerticalAlignment="Top" TextAlignment="Left"/>
 
         <Button Content="Classify Image"
             Height="100" Width="200" Command="{Binding ClassifyImageCommand}" Margin="600,50,0,0">
@@ -19,7 +20,7 @@
             Height="100" Width="200" Command="{Binding GoToStatisticsViewCommand}" Margin="600,350,0,0">
         </Button>
 
-        <Image Source="{Binding ImageSource}" Height="200" Width="200" HorizontalAlignment="Left" Margin="50,150,0,0" VerticalAlignment="Top"/>
+        <Image Source="{Binding ImageSourcePath}" Height="200" Width="200" HorizontalAlignment="Left" Margin="50,150,0,0" VerticalAlignment="Top"/>
         
     </Grid>
 </UserControl>
