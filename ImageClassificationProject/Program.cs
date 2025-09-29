@@ -49,9 +49,9 @@ namespace UsingTensorFlowModel
             var labels = File.ReadAllLines(LabelsPath);
             //flg. skal vaere dit eget testbillede og det skal vaere tilfoejet til projektet
             var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"TensorFlowModel","test.jpg");
-        //C: \\Users\\Niklas\\Source\\Repos\\ImageClassificationProject\\ImageClassificationProject\\TensorFlowModel\\test.jpg
+      
 
-        var input = new ModelInput { ImagePath = imagePath };
+            var input = new ModelInput { ImagePath = imagePath };
             var prediction = predictionEngine.Predict(input);
 
             //fortolker resultatet
