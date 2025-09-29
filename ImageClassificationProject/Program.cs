@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using Infrastructure.Models;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System.Diagnostics.Contracts;
@@ -28,6 +29,24 @@ namespace UsingTensorFlowModel
             //bruge noget som hedder MLContext - hvad er det? Who knows!
             var mlContext = new MLContext();
 
+            var testFolders = new[]
+                {
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","cardboard", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","glass", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","metal", "model_test"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","plastic", "model_test")
+                };
+
+            // Collect all image files (e.g., jpg, png) from all test folders
+            var allImagePaths = testFolders
+                .SelectMany(folder => Directory.EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
+                    .Where(file => file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            // Create ModelInput objects for each image
+            var allInputs = allImagePaths.Select(path => new ModelInput { ImagePath = path }).ToList();
+
             //definer image processing pipeline - hvad er det? Who the fuck knows, jeg
             //faar hjaelp af AI!
             var pipeline = mlContext.Transforms.LoadImages(outputColumnName: ModelInputName, imageFolder: "", inputColumnName: nameof(ModelInput.ImagePath))
@@ -45,32 +64,43 @@ namespace UsingTensorFlowModel
 
             var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(model);
 
-            //load labels og lav forudsigelsen!
+            // Load all ModelInput objects into IDataView
+            var inputData = mlContext.Data.LoadFromEnumerable(allInputs);
+
+            // Fit the pipeline (if needed, usually for transformers, not for TensorFlow models)
+            model = pipeline.Fit(inputData);
+
+            // Transform the data (run all images through the pipeline)
+            var predictions = model.Transform(inputData);
+
+            // Extract predictions
+            var predictionResults = mlContext.Data.CreateEnumerable<ModelOutput>(predictions, reuseRowObject: false).ToList();
+
+            // Load labels
             var labels = File.ReadAllLines(LabelsPath);
-            //flg. skal vaere dit eget testbillede og det skal vaere tilfoejet til projektet
-            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"TensorFlowModel","test.jpg");
-      
 
-            var input = new ModelInput { ImagePath = imagePath };
-            var prediction = predictionEngine.Predict(input);
+            // Print results for each image
+            for (int i = 0; i < allInputs.Count; i++)
+            {
+                var prediction = predictionResults[i];
+                var maxProbability = prediction.Prediction.Max();
+                var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
+                var predictedLabel = labels[maxIndex];
 
-            //fortolker resultatet
-            var maxProbability = prediction.Prediction.Max();
-            var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
-            var predictedLabel = labels[maxIndex];
-
-            Console.WriteLine($"Image: {Path.GetFileName(imagePath)}");
-            Console.WriteLine($"Predicted Label: {predictedLabel}");
-            Console.WriteLine($"Probability: {maxProbability:P2}");
+                Console.WriteLine($"Image: {Path.GetFileName(allInputs[i].ImagePath)}");
+                Console.WriteLine($"Predicted Label: {predictedLabel}");
+                Console.WriteLine($"Probability: {maxProbability:P2}");
+                Console.WriteLine();
+            }
 
             Console.ReadLine();
         }
     }
 
     //stien til billedfilen paa computeren
-    public class ModelInput
-    {
-        public string ImagePath { get; set; }
+  public class ModelInput
+   {
+       public string ImagePath { get; set; }
     }
 
     public class ModelOutput
