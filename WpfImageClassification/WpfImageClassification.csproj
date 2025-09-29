@@ -17,4 +17,8 @@
     <Folder Include="Model\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ImageClassificationProject\ConsoleImageClassification.csproj" />
+  </ItemGroup>
+
 </Project>
