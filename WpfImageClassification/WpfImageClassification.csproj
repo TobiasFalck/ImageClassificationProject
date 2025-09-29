@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.16.0" />
-    <PackageReference Include="TensorFlow.NET" Version="0.150.0" />
+    <PackageReference Include="TensorFlow.NET" Version="0.20.1" />
   </ItemGroup>
 
 </Project>

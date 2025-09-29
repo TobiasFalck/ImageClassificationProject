@@ -20,4 +20,22 @@
 		<Folder Include="TensorFlowModel\model.savedmodel\assets\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="TensorFlowModel\labels.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TensorFlowModel\model.savedmodel\saved_model.pb">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TensorFlowModel\model.savedmodel\variables\variables.data-00000-of-00001">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TensorFlowModel\model.savedmodel\variables\variables.index">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TensorFlowModel\test.jpg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
