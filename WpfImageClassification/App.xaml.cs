@@ -15,7 +15,7 @@ namespace WpfImageClassification
         {
             base.OnStartup(e);
             MainWindow mainWindow = new MainWindow();
-            //mainWindow.DataContext = new MainWindowViewModel();
+            mainWindow.DataContext = new MainWindowViewModel();
             mainWindow.Show();
         }
     }
