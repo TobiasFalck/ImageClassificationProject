@@ -95,14 +95,42 @@ namespace ConsoleImageClassification
                 Console.WriteLine($"Predicted Label: {predictedLabel}");
                 Console.WriteLine($"Probability: {maxProbability:P2}");
                 Console.WriteLine();
+                CreateCsvFile();
             }
 
             Console.ReadLine();
+
+            
+
+
         }
+
+        private static void CreateCsvFile(bool includeHeader = false)
+        {
+            string folderPath = @"C:\Users\Niklas\Source\Repos\ImageClassificationProject\ImageClassificationProject\data";
+            string fileName = "mlStats.csv";
+            string fullPath = Path.Combine(folderPath, fileName);
+
+            Directory.CreateDirectory(folderPath);
+
+            if (!File.Exists(fullPath))
+            {
+                string content = includeHeader ? "ImageName,PredictedLabel,Probability\n" : string.Empty;
+                File.WriteAllText(fullPath, content);
+
+                Console.WriteLine($"CSV file created at: {fullPath}");
+            }
+            else
+            {
+                Console.WriteLine($"CSV file already exists: {fullPath}");
+            }
+        }
+
+
     }
 
     //stien til billedfilen paa computeren
-  public class ModelInput
+    public class ModelInput
    {
        public string ImagePath { get; set; }
     }
@@ -114,4 +142,6 @@ namespace ConsoleImageClassification
         [ColumnName("StatefulPartitionedCall")]
         public float[] Prediction { get; set; }
     }
+
+
 }
