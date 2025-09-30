@@ -166,6 +166,50 @@ namespace WpfImageClassification.ViewModel
         public StatisticsViewModel(Action action)
         {
             _goToMenuViewAction = action;
+
+            PopulateStatisticsFields();
+        }
+
+        private void PopulateStatisticsFields()
+        {
+            using(StreamReader reader = new StreamReader(_statisticsFilePath))
+            {
+                string data = reader.ReadLine();
+                string[] separatedData;
+                while (reader.ReadLine()!=null)
+                {
+                    separatedData = data.Split(',');
+                    if (separatedData[0] == "Cardboard")
+                    {
+                        CardboardAccuracy = Double.Parse(separatedData[1]);
+                        CardboardPrecision = Double.Parse(separatedData[2]);
+                        CardboardRecall = Double.Parse(separatedData[3]);
+                        CardboardF1Score = Double.Parse(separatedData[4]);
+                    }
+                    else if(separatedData[0] == "Plastic")
+                    {
+                        _plasticAccuracy = Double.Parse(separatedData[1]);
+                        PlasticPrecision = Double.Parse(separatedData[2]);
+                        PlasticRecall = Double.Parse(separatedData[3]);
+                        PlasticF1Score = Double.Parse(separatedData[4]);
+                    }
+                    else if(separatedData[0] == "Metal")
+                    {
+                        _metalAccuracy = Double.Parse(separatedData[1]);
+                        MetalPrecision = Double.Parse(separatedData[2]);
+                        MetalRecall = Double.Parse(separatedData[3]);
+                        MetalF1Score = Double.Parse(separatedData[4]);
+                    }
+                    else if(separatedData[0] == "Glass")
+                    {
+                        _glassAccuracy = Double.Parse(separatedData[1]);
+                        GlassPrecision = Double.Parse(separatedData[2]);
+                        GlassRecall = Double.Parse(separatedData[3]);
+                        GlassF1Score = Double.Parse(separatedData[4]);
+                    }
+                    data = reader.ReadLine();
+                }
+            }
         }
 
         public void GoToMenuView(object obj)
