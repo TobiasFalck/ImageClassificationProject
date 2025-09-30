@@ -11,8 +11,10 @@ namespace WpfImageClassification.ViewModel
 {
     public class StatisticsViewModel : BaseViewModel
     {
+        #region fields
         private ICommand _goToMenuViewCommand;
         private readonly Action _goToMenuViewAction;
+
         private double _cardboardAccuracy = 0.95;
         private double _cardboardPrecision;
         private double _cardboardRecall;
@@ -34,6 +36,9 @@ namespace WpfImageClassification.ViewModel
         private double _glassF1Score;
 
         private string _statisticsFilePath = "C:\\modelstatistics.txt";
+        #endregion
+
+        #region properties
 
         public ICommand GoToMenuViewCommand
         {
@@ -156,6 +161,8 @@ namespace WpfImageClassification.ViewModel
                 OnPropertyChanged();
             }
         }
+        #endregion
+
         public StatisticsViewModel(Action action)
         {
             _goToMenuViewAction = action;
