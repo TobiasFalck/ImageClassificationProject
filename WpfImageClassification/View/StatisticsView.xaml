@@ -7,24 +7,24 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label Content="{Binding Accuracy}" ContentStringFormat="Accuracy: {0}%" HorizontalAlignment="Left" Margin="200,100,0,0" FontSize="36"/>
+        <Label Content="{Binding CardboardAccuracy}" ContentStringFormat="Accuracy: {0}%" HorizontalAlignment="Left" Margin="10,10,0,0" FontSize="36"/>
         <Grid>
-            <Label Content="Cardboard"/>
-            <Label Content="{Binding Precision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="200,150,0,0" FontSize="36"/>
-            <Label Content="{Binding Recall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="200,200,0,0" FontSize="36"/>
-            <Label Content="{Binding F1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="200,250,0,0" FontSize="36"/>
-            <Label Content="Plastic"/>
-            <Label Content="{Binding Precision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="200,150,0,0" FontSize="36"/>
-            <Label Content="{Binding Recall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="200,200,0,0" FontSize="36"/>
-            <Label Content="{Binding F1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="200,250,0,0" FontSize="36"/>
-            <Label Content="Metal"/>
-            <Label Content="{Binding Precision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="200,150,0,0" FontSize="36"/>
-            <Label Content="{Binding Recall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="200,200,0,0" FontSize="36"/>
-            <Label Content="{Binding F1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="200,250,0,0" FontSize="36"/>
-            <Label Content="Glass"/>
-            <Label Content="{Binding Precision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="200,150,0,0" FontSize="36"/>
-            <Label Content="{Binding Recall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="200,200,0,0" FontSize="36"/>
-            <Label Content="{Binding F1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="200,250,0,0" FontSize="36"/>
+            <Label Content="Cardboard" HorizontalAlignment="Left" Margin="50,80,0,0" FontSize="20"/>
+            <Label Content="{Binding CardboardPrecision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="50,130,0,0"/>
+            <Label Content="{Binding CardboardRecall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="50,180,0,0"/>
+            <Label Content="{Binding CardboardF1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="50,230,0,0"/>
+            <Label Content="Plastic" HorizontalAlignment="Left" Margin="250,80,0,0" FontSize="20"/>
+            <Label Content="{Binding PlasticPrecision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="250,130,0,0"/>
+            <Label Content="{Binding PlasticRecall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="250,180,0,0"/>
+            <Label Content="{Binding PlasticF1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="250,230,0,0"/>
+            <Label Content="Metal" HorizontalAlignment="Left" Margin="450,80,0,0" FontSize="20"/>
+            <Label Content="{Binding MetalPrecision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="450,130,0,0"/>
+            <Label Content="{Binding MetalRecall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="450,180,0,0"/>
+            <Label Content="{Binding MetalF1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="450,230,0,0"/>
+            <Label Content="Glass" HorizontalAlignment="Left" Margin="650,80,0,0" FontSize="20"/>
+            <Label Content="{Binding GlassPrecision}" ContentStringFormat="Precision: {0}" HorizontalAlignment="Left" Margin="650,130,0,0"/>
+            <Label Content="{Binding GlassRecall}" ContentStringFormat="Recall: {0}" HorizontalAlignment="Left" Margin="650,180,0,0"/>
+            <Label Content="{Binding GlassF1Score}" ContentStringFormat="F1-Score: {0}" HorizontalAlignment="Left" Margin="650,230,0,0"/>
         </Grid>
         
         <Button Content="Menu View" Height="100" Width="200" Command="{Binding GoToMenuViewCommand}" Margin="600,350,0,0"/>
