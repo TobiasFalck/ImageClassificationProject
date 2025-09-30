@@ -24,6 +24,7 @@ namespace ConsoleImageClassification
 
 
 
+
         static void Main(string[] args)
         {
             //bruge noget som hedder MLContext - hvad er det? Who knows!
