@@ -9,8 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Microsoft.ML" Version="4.0.2" />
+	<PackageReference Include="Microsoft.ML.ImageAnalytics" Version="4.0.2" />
+	<PackageReference Include="Microsoft.ML.Vision" Version="4.0.2" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.16.0" />
     <PackageReference Include="TensorFlow.NET" Version="0.20.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ImageClassificationProject\ConsoleImageClassification.csproj" />
   </ItemGroup>
 
 </Project>
