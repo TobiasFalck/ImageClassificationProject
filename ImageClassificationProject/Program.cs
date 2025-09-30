@@ -5,7 +5,7 @@ using Microsoft.ML.Transforms;
 using System.Diagnostics.Contracts;
 using Tensorflow.Operations.Initializers;
 
-namespace UsingTensorFlowModel
+namespace ConsoleImageClassification
 {
     //alle filer, altsaa test billedet, labels.txt, saved_model.pb, variables.index og variables.data:
     //Tjek deres properties og vaer sikker paa der staar "Copy to Output Directory: Copy if newer"
