@@ -18,7 +18,7 @@ namespace WpfImageClassification.ViewModel
         private double _recall;
         private double _f1Score;
 
-        private string _statisticsFilePath = "C:\\Users\\jeppe\\source\\repos\\ImageClassificationProject\\ImageClassificationProject\\bin\\Debug\\net9.0-windows\\data\\modelstatistics.txt";
+        private string _statisticsFilePath = "C:\\modelstatistics.txt";
 
         public ICommand GoToMenuViewCommand
         {
