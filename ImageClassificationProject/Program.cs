@@ -127,6 +127,35 @@ namespace ConsoleImageClassification
             }
         }
 
+      
+        private static List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> EvaluatePredictions(
+            List<ModelInput> allInputs, List<ModelOutput> predictionResults, string[] labels)
+        {
+            var results = new List<(string, string, string, bool)>();
+
+            for (int i = 0; i < allInputs.Count; i++)
+            {
+                var imagePath = allInputs[i].ImagePath;
+                var imageName = Path.GetFileName(imagePath);
+
+                
+                var actualLabel = imageName.Split('_')[0];
+
+                // Get predicted label
+                var prediction = predictionResults[i];
+                var maxProbability = prediction.Prediction.Max();
+                var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
+                var predictedLabel = labels[maxIndex];
+
+                // Compare actual and predicted labels (case-insensitive)
+                bool isCorrect = string.Equals(actualLabel, predictedLabel, StringComparison.OrdinalIgnoreCase);
+
+                results.Add((imageName, actualLabel, predictedLabel, isCorrect));
+            }
+
+            return results;
+        }
+
 
     }
 
