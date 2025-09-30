@@ -80,8 +80,10 @@ namespace ConsoleImageClassification
             // Extract predictions
             var predictionResults = mlContext.Data.CreateEnumerable<ModelOutput>(predictions, reuseRowObject: false).ToList();
 
-            // Load labels
-            var labels = File.ReadAllLines(LabelsPath);
+            // Load labels, ignoring the leading number
+            var labels = File.ReadAllLines(LabelsPath)
+                .Select(line => line.Split(' ', 2)[1].Trim().ToLowerInvariant())
+                .ToArray();
 
             // Print results for each image
             for (int i = 0; i < allInputs.Count; i++)
@@ -98,6 +100,11 @@ namespace ConsoleImageClassification
                 CreateCsvFile();
 
             }
+
+            //PredictionEvaluation(allInputs, predictionResults, labels);
+
+            CalculatePrecision(PredictionEvaluation(allInputs, predictionResults, labels), labels);
+            CalculateRecall(PredictionEvaluation(allInputs, predictionResults, labels), labels);
 
             Console.ReadLine();
 
@@ -127,35 +134,65 @@ namespace ConsoleImageClassification
             }
         }
 
-      
-        private static List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> EvaluatePredictions(
+
+        private static List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> PredictionEvaluation(
             List<ModelInput> allInputs, List<ModelOutput> predictionResults, string[] labels)
         {
-            var results = new List<(string, string, string, bool)>();
+            var results = new List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)>();
 
             for (int i = 0; i < allInputs.Count; i++)
             {
                 var imagePath = allInputs[i].ImagePath;
-                var imageName = Path.GetFileName(imagePath);
+                var imageName = Path.GetFileNameWithoutExtension(imagePath);
 
-                
-                var actualLabel = imageName.Split('_')[0];
+                var actualLabel = imageName.Split('_')[0].Trim().ToLowerInvariant();
 
-                // Get predicted label
                 var prediction = predictionResults[i];
                 var maxProbability = prediction.Prediction.Max();
                 var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
-                var predictedLabel = labels[maxIndex];
+                var predictedLabel = labels[maxIndex].Trim().ToLowerInvariant();
 
-                // Compare actual and predicted labels (case-insensitive)
-                bool isCorrect = string.Equals(actualLabel, predictedLabel, StringComparison.OrdinalIgnoreCase);
+                //Console.WriteLine($"DEBUG: actualLabel='{actualLabel}', predictedLabel='{predictedLabel}'");
+
+                bool isCorrect = actualLabel == predictedLabel;
 
                 results.Add((imageName, actualLabel, predictedLabel, isCorrect));
             }
 
+            int correctCount = results.Count(r => r.IsCorrect);
+            int totalCount = results.Count;
+            int wrongCount = results.Count - correctCount;
+            double accuracy = totalCount > 0 ? (double)correctCount / totalCount * 100 : 0.0;
+
+            Console.WriteLine($"Evaluation complete: {correctCount} correct, {wrongCount} wrong.");
+            Console.WriteLine($"Overall Accuracy: {accuracy:F2}%");
+
+
             return results;
         }
 
+
+        private static void CalculatePrecision(List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> results, string[] labels)
+        {
+            var labelSet = labels.Select(l => l.Trim().ToLowerInvariant()).ToArray();
+            var precisionPerClass = new Dictionary<string, double>();
+
+            foreach (var label in labelSet)
+            {
+                int truePositives = results.Count(r => r.ActualLabel == label && r.PredictedLabel == label);
+                int falsePositives = results.Count(r => r.ActualLabel != label && r.PredictedLabel == label);
+
+                double precision = (truePositives + falsePositives) > 0
+                    ? (double)truePositives / (truePositives + falsePositives)
+                    : 0.0;
+
+                precisionPerClass[label] = precision;
+                Console.WriteLine($"Precision for '{label}': {precision:F2}");
+            }
+
+            double macroPrecision = precisionPerClass.Values.Average();
+            Console.WriteLine($"Macro-average Precision: {macroPrecision:F2}");
+        }
 
     }
 
