@@ -176,7 +176,8 @@ namespace WpfImageClassification.ViewModel
             {
                 string data = reader.ReadLine();
                 string[] separatedData;
-                while (reader.ReadLine()!=null)
+                //while (reader.ReadLine()!=null)
+                while (data != null) 
                 {
                     separatedData = data.Split(',');
                     if (separatedData[0] == "Cardboard")
