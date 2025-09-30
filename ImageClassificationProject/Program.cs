@@ -104,7 +104,7 @@ namespace ConsoleImageClassification
             //PredictionEvaluation(allInputs, predictionResults, labels);
 
             CalculatePrecision(PredictionEvaluation(allInputs, predictionResults, labels), labels);
-            CalculateRecall(PredictionEvaluation(allInputs, predictionResults, labels), labels);
+            
 
             Console.ReadLine();
 
