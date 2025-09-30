@@ -29,6 +29,10 @@ namespace UsingTensorFlowModel
             //bruge noget som hedder MLContext - hvad er det? Who knows!
             var mlContext = new MLContext();
 
+            // Define the paths to the four test folders containing images for each material category.
+            // Each folder is expected to be located under the "data" directory in the application's base directory.
+            // The folders are named according to the material type: "cardboard", "glass", "metal", and "plastic".
+            // Each material folder contains a "model_test" subfolder where the test images are stored.
             var testFolders = new[]
                 {
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","cardboard", "model_test"),
