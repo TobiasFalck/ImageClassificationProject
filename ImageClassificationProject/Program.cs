@@ -96,6 +96,7 @@ namespace ConsoleImageClassification
                 Console.WriteLine($"Probability: {maxProbability:P2}");
                 Console.WriteLine();
                 CreateCsvFile();
+
             }
 
             Console.ReadLine();
