@@ -16,4 +16,12 @@
     <PackageReference Include="TensorFlow.NET" Version="0.150.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ImageClassificationProject\ConsoleImageClassification.csproj" />
+  </ItemGroup>
+
 </Project>

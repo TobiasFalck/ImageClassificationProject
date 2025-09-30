@@ -1,12 +1,15 @@
-﻿<Window x:Class="WpfImageClassification.MainWindow"
+﻿<Window x:Class="WpfImageClassification.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfImageClassification"
+        xmlns:local="clr-namespace:WpfImageClassification.View"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="550" Width="850">
     <Grid>
+        <ContentControl x:Name="currentView" Content="{Binding CurrentViewModel}">
+
+        </ContentControl>
 
     </Grid>
 </Window>

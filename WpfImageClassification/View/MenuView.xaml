@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="WpfImageClassification.View.MenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfImageClassification.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Label Content="Insert link to picture" Margin="50,10,474,405"/>
+        <TextBox Height="60" Width="400" Text="{Binding ImageSourcePath}" FontSize="36" HorizontalAlignment="Left" Margin="50,50,0,0" VerticalAlignment="Top" TextAlignment="Left"/>
+
+        <Button Content="Classify Image"
+            Height="100" Width="200" Command="{Binding ClassifyImageCommand}" Margin="600,50,0,0">
+        </Button>
+
+        <Label Content="{Binding ClassificationResult}" FontSize="36" HorizontalAlignment="Left" Margin="50,400,0,0" VerticalAlignment="Top"/>
+
+        <Button Content="Statistics View"
+            Height="100" Width="200" Command="{Binding GoToStatisticsViewCommand}" Margin="600,350,0,0">
+        </Button>
+
+        <Image Source="{Binding ImageSourcePath}" Height="200" Width="200" HorizontalAlignment="Left" Margin="50,150,0,0" VerticalAlignment="Top"/>
+        
+    </Grid>
+</UserControl>
