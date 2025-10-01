@@ -35,7 +35,9 @@ namespace WpfImageClassification.ViewModel
         private double _glassRecall;
         private double _glassF1Score;
 
-        private string _statisticsFilePath = "C:\\modelstatistics.txt";
+        // Change the file path to point to the mlStats.csv file in the ConsoleImageClassification project.
+        // Adjust the relative path as needed based on your solution structure.
+        private string _statisticsFilePath = "C:\\temp2\\mlStats.csv";
         #endregion
 
         #region properties

@@ -116,7 +116,7 @@ namespace ConsoleImageClassification
 
         private static void CreateCsvFile(bool includeHeader = false)
         {
-            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
+            string folderPath = "C:\\temp2\\";
             string fileName = "mlStats.csv";
             string fullPath = Path.Combine(folderPath, fileName);
 
