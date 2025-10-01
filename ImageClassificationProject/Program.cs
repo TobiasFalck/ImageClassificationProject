@@ -116,7 +116,7 @@ namespace ConsoleImageClassification
 
         private static void CreateCsvFile(bool includeHeader = false)
         {
-            string folderPath = @"C:\Users\Niklas\Source\Repos\ImageClassificationProject\ImageClassificationProject\data";
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
             string fileName = "mlStats.csv";
             string fullPath = Path.Combine(folderPath, fileName);
 
@@ -153,8 +153,7 @@ namespace ConsoleImageClassification
                 var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
                 var predictedLabel = labels[maxIndex].Trim().ToLowerInvariant();
 
-                //Console.WriteLine($"DEBUG: actualLabel='{actualLabel}', predictedLabel='{predictedLabel}'");
-
+                
                 bool isCorrect = actualLabel == predictedLabel;
 
                 results.Add((imageName, actualLabel, predictedLabel, isCorrect));
