@@ -24,11 +24,16 @@ namespace ConsoleImageClassification
 
 
 
+
         static void Main(string[] args)
         {
             //bruge noget som hedder MLContext - hvad er det? Who knows!
             var mlContext = new MLContext();
 
+            // Define the paths to the four test folders containing images for each material category.
+            // Each folder is expected to be located under the "data" directory in the application's base directory.
+            // The folders are named according to the material type: "cardboard", "glass", "metal", and "plastic".
+            // Each material folder contains a "model_test" subfolder where the test images are stored.
             var testFolders = new[]
                 {
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","cardboard", "model_test"),
@@ -76,8 +81,10 @@ namespace ConsoleImageClassification
             // Extract predictions
             var predictionResults = mlContext.Data.CreateEnumerable<ModelOutput>(predictions, reuseRowObject: false).ToList();
 
-            // Load labels
-            var labels = File.ReadAllLines(LabelsPath);
+            // Load labels, ignoring the leading number
+            var labels = File.ReadAllLines(LabelsPath)
+                .Select(line => line.Split(' ', 2)[1].Trim().ToLowerInvariant())
+                .ToArray();
 
             // Print results for each image
             for (int i = 0; i < allInputs.Count; i++)
@@ -91,14 +98,106 @@ namespace ConsoleImageClassification
                 Console.WriteLine($"Predicted Label: {predictedLabel}");
                 Console.WriteLine($"Probability: {maxProbability:P2}");
                 Console.WriteLine();
+                CreateCsvFile();
+
             }
 
+            //PredictionEvaluation(allInputs, predictionResults, labels);
+
+            CalculatePrecision(PredictionEvaluation(allInputs, predictionResults, labels), labels);
+            
+
             Console.ReadLine();
+
+            
+
+
         }
+
+        private static void CreateCsvFile(bool includeHeader = false)
+        {
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
+            string fileName = "mlStats.csv";
+            string fullPath = Path.Combine(folderPath, fileName);
+
+            Directory.CreateDirectory(folderPath);
+
+            if (!File.Exists(fullPath))
+            {
+                string content = includeHeader ? "ImageName,PredictedLabel,Probability\n" : string.Empty;
+                File.WriteAllText(fullPath, content);
+
+                Console.WriteLine($"CSV file created at: {fullPath}");
+            }
+            else
+            {
+                Console.WriteLine($"CSV file already exists: {fullPath}");
+            }
+        }
+
+
+        private static List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> PredictionEvaluation(
+            List<ModelInput> allInputs, List<ModelOutput> predictionResults, string[] labels)
+        {
+            var results = new List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)>();
+
+            for (int i = 0; i < allInputs.Count; i++)
+            {
+                var imagePath = allInputs[i].ImagePath;
+                var imageName = Path.GetFileNameWithoutExtension(imagePath);
+
+                var actualLabel = imageName.Split('_')[0].Trim().ToLowerInvariant();
+
+                var prediction = predictionResults[i];
+                var maxProbability = prediction.Prediction.Max();
+                var maxIndex = prediction.Prediction.AsSpan().IndexOf(maxProbability);
+                var predictedLabel = labels[maxIndex].Trim().ToLowerInvariant();
+
+                
+                bool isCorrect = actualLabel == predictedLabel;
+
+                results.Add((imageName, actualLabel, predictedLabel, isCorrect));
+            }
+
+            int correctCount = results.Count(r => r.IsCorrect);
+            int totalCount = results.Count;
+            int wrongCount = results.Count - correctCount;
+            double accuracy = totalCount > 0 ? (double)correctCount / totalCount * 100 : 0.0;
+
+            Console.WriteLine($"Evaluation complete: {correctCount} correct, {wrongCount} wrong.");
+            Console.WriteLine($"Overall Accuracy: {accuracy:F2}%");
+
+
+            return results;
+        }
+
+
+        private static void CalculatePrecision(List<(string ImageName, string ActualLabel, string PredictedLabel, bool IsCorrect)> results, string[] labels)
+        {
+            var labelSet = labels.Select(l => l.Trim().ToLowerInvariant()).ToArray();
+            var precisionPerClass = new Dictionary<string, double>();
+
+            foreach (var label in labelSet)
+            {
+                int truePositives = results.Count(r => r.ActualLabel == label && r.PredictedLabel == label);
+                int falsePositives = results.Count(r => r.ActualLabel != label && r.PredictedLabel == label);
+
+                double precision = (truePositives + falsePositives) > 0
+                    ? (double)truePositives / (truePositives + falsePositives)
+                    : 0.0;
+
+                precisionPerClass[label] = precision;
+                Console.WriteLine($"Precision for '{label}': {precision:F2}");
+            }
+
+            double macroPrecision = precisionPerClass.Values.Average();
+            Console.WriteLine($"Macro-average Precision: {macroPrecision:F2}");
+        }
+
     }
 
     //stien til billedfilen paa computeren
-  public class ModelInput
+    public class ModelInput
    {
        public string ImagePath { get; set; }
     }
@@ -110,4 +209,6 @@ namespace ConsoleImageClassification
         [ColumnName("StatefulPartitionedCall")]
         public float[] Prediction { get; set; }
     }
+
+
 }
